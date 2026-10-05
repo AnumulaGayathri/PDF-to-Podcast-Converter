@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PDF to Podcast Converter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #f7f8fa;
+            --card: #ffffff;
+            --border: #d7dce5;
+            --text: #1f2a44;
+            --muted: #6b7484;
+            --primary: #1f4f84;
+            --primary-soft: #eaf0f8;
+            --radius: 14px;
+            --shadow: 0 10px 30px rgba(27, 45, 77, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        .page {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            background: #ffffff;
+            border-bottom: 1px solid #e3e8ef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+
+        .brand {
+            font-size: 1.18rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .main {
+            flex: 1;
+            width: min(1100px, 100%);
+            margin: 1.5rem auto;
+            padding: 0 1rem;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            padding: 1.5rem;
+        }
+
+        .card h1 {
+            margin: 0 0 0.6rem 0;
+            font-size: 1.6rem;
+            color: #1f2a44;
+        }
+
+        .subtle {
+            color: var(--muted);
+            margin-bottom: 1rem;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1rem;
+        }
+
+        label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.35rem;
+        }
+
+        input[type='file'] {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.75rem;
+            background: #fff;
+            transition: border-color 0.2s ease;
+            color: #35435c;
+        }
+
+        input[type='file']:focus,
+        input[type='file']:hover {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .btn {
+            border: none;
+            background: var(--primary);
+            color: white;
+            padding: 0.85rem 1.1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s ease;
+            margin-top: 0.25rem;
+        }
+
+        .btn:hover {
+            background: #19416f;
+        }
+
+        .status {
+            margin-top: 1.2rem;
+            font-size: 0.95rem;
+        }
+
+        .output {
+            margin-top: 1.5rem;
+            background: #f9fbff;
+            border: 1px solid #dce5f2;
+            border-radius: 10px;
+            padding: 1rem;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 160px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.75rem;
+            resize: vertical;
+            font-family: 'Poppins', sans-serif;
+            margin-top: 0.35rem;
+        }
+
+        .audio-panel {
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 700px) {
+            .topbar {
+                padding: 0.8rem 1rem;
+            }
+
+            .main {
+                margin: 1rem auto;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="page">
+    <header class="topbar">
+        <div class="brand">PDF Podcast</div>
+        <form method="POST" action="/logout/" style="margin:0;">
+            {% csrf_token %}
+            <button type="submit" class="btn" style="width:auto;padding:0.5rem 0.9rem;font-size:0.9rem;">Logout</button>
+        </form>
+    </header>
+    <main class="main">
+        <div class="card">
+            <h1>Welcome{% if user.is_authenticated %}, {{ user.username }}{% endif %}</h1>
+            <p class="subtle">Choose a PDF file and convert it into a podcast audio file.</p>
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="field">
+                    <label for="pdf">PDF File</label>
+                    <input id="pdf" type="file" name="pdf" accept="application/pdf" required />
+                </div>
+                <button type="submit" class="btn">Convert to Podcast</button>
+            </form>
+
+            {% if text %}
+                <div class="output">
+                    <h3 style="margin-top:0;">Generated Podcast Script</h3>
+                    <textarea readonly>{{ text }}</textarea>
+                    <div class="audio-panel">
+                        <h3 style="margin:0.7rem 0 0.4rem 0;">Podcast Audio</h3>
+                        <audio controls style="width:100%;">
+                            <source src="/static/podcast.mp3" type="audio/mpeg" />
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </main>
+</body>
+</html>
